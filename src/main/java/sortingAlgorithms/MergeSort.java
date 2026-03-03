@@ -1,8 +1,14 @@
 package sortingAlgorithms;
 
 public class MergeSort implements SortingAlg{
+    SortingCompCalculate calculate = new SortingCompCalculate();
+    @Override
+    public SortingCompCalculate getCalculation() {
+        return calculate;
+    }
     @Override
     public int[] sort(int[] arr) {
+        calculate.reset();
         return divide(arr);
     }
 
@@ -27,6 +33,7 @@ public class MergeSort implements SortingAlg{
         int[] result = new int[arrLeft.length + arrRight.length];
         int l = 0; int r = 0; int i = 0;
         while(l < arrLeft.length && r < arrRight.length){
+            calculate.addComparisons();
             if(arrLeft[l] <= arrRight[r]){
                 result[i] = arrLeft[l];
                 l++; i++;

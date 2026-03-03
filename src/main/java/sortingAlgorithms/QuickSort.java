@@ -3,8 +3,14 @@ package sortingAlgorithms;
 import java.util.Random;
 
 public class QuickSort implements SortingAlg{
+    SortingCompCalculate calculate = new SortingCompCalculate();
+    @Override
+    public SortingCompCalculate getCalculation() {
+        return calculate;
+    }
     @Override
     public int[] sort(int[] arr) {
+        calculate.reset();
         return quick(arr, 0, arr.length-1);
     }
     public int[] quick(int[] arr, int st, int end){
@@ -23,15 +29,18 @@ public class QuickSort implements SortingAlg{
         arr[st] = key;
         int j = st;
         for(int i = st+1; i <= end; i++){
+            calculate.addComparisons();
             if(arr[i] <= key){
                 j++;
                 int temp = arr[i];
                 arr[i] = arr[j];
                 arr[j] = temp;
+                calculate.addSwaps();
             }
         }
         arr[st] = arr[j];
         arr[j] = key;
+        calculate.addSwaps();
         return j;
     }
 }

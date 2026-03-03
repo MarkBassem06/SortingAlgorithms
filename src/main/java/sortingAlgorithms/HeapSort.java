@@ -1,8 +1,14 @@
 package sortingAlgorithms;
 
 public class HeapSort implements SortingAlg{
+    SortingCompCalculate calculate = new SortingCompCalculate();
+    @Override
+    public SortingCompCalculate getCalculation() {
+        return calculate;
+    }
     @Override
     public int[] sort(int[] arr) {
+        calculate.reset();
         arr = build_max_heap(arr);
         int end = arr.length -1;
         while(end>0){
@@ -10,6 +16,7 @@ public class HeapSort implements SortingAlg{
             arr[end] = arr[0];
             arr[0] = temp;
             end--;
+            calculate.addSwaps();
             max_heapify(arr,0, end);
         }
         return arr;
@@ -18,9 +25,11 @@ public class HeapSort implements SortingAlg{
         int l = idx*2 +1;
         int r = idx*2 +2;
         int largest = idx;
+        calculate.addComparisons();
         if(l <= end && arr[l] > arr[largest]){
             largest = l;
         }
+        calculate.addComparisons();
         if(r <= end && arr[r] > arr[largest]){
             largest = r;
         }
@@ -28,6 +37,7 @@ public class HeapSort implements SortingAlg{
             int temp = arr[idx];
             arr[idx] = arr[largest];
             arr[largest] = temp;
+            calculate.addSwaps();
             max_heapify(arr, largest, end);
         }
     }

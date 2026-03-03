@@ -1,64 +1,40 @@
 package com.example.sortingalg;
 
 import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import sortingAlgorithms.*;
 
-public class TestApplication extends Application {
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+public class TestApplication extends Application {
     @Override
     public void start(Stage stage) {
 
-        int[] arr1 = {5, 2, 8, 1, 4};
-        int[] arr2 = {5, 2, 8, 1, 4};
-        int[] arr3 = {5, 2, 8, 1, 4};
-        int[] arr4 = {5, 2, 8, 1, 4};
-        int[] arr5 = {5, 2, 8, 1, 4};
-        int[] arr6 = {5, 2, 8, 1, 4};
+        Button comparisonBtn = new Button("Comparison Mode");
+        Button visualizationBtn = new Button("Visualization Mode");
 
-        SortingAlg algSelect = new SelectionSort();
-        SortingAlg algBubble = new BubbleSort();
-        SortingAlg algInsert = new InsertionSort();
-        SortingAlg algMerge = new MergeSort();
-        SortingAlg algQuick = new QuickSort();
-        SortingAlg algHeap = new HeapSort();
+        comparisonBtn.setPrefWidth(200);
+        visualizationBtn.setPrefWidth(200);
 
+        VBox root = new VBox(20, comparisonBtn, visualizationBtn);
+        root.setStyle("-fx-alignment: center; -fx-padding: 40;");
 
+        ComparisonMode compare = new ComparisonMode();
+        VisualizationMode visualize = new VisualizationMode();
 
-        int[] result1 = algSelect.sort(arr1); //test Selection
-        int[] result2 = algBubble.sort(arr2); //test Bubble
-        int[] result3 = algInsert.sort(arr3); //test Insertion
-        int[] result4 = algMerge.sort(arr4); //test merge
-        int[] result5 = algQuick.sort(arr5); //test Quick
-        int[] result6 = algHeap.sort(arr6); //test heap
+        comparisonBtn.setOnAction(e -> compare.show(stage));
+        visualizationBtn.setOnAction(e -> visualize.show(stage));
 
-        System.out.println("Selection: ");
-        for (int num : result1) {
-            System.out.print(num + " ");
-        }
-        System.out.println("\nBubble: ");
-        for (int num : result2) {
-            System.out.print(num + " ");
-        }
-        System.out.println("\nInsertion: ");
-        for (int num : result3) {
-            System.out.print(num + " ");
-        }
-        System.out.println("\nMerge: ");
-        for (int num : result4) {
-            System.out.print(num + " ");
-        }
-        System.out.println("\nQuick: ");
-        for (int num : result5) {
-            System.out.print(num + " ");
-        }
-        System.out.println("\nHeap: ");
-        for (int num : result6) {
-            System.out.print(num + " ");
-        }
-
-
-        System.exit(0);
-
+        Scene scene = new Scene(root, 500, 300);
+        stage.setScene(scene);
+        stage.setTitle("Sorting Algorithms Project");
+        stage.show();
     }
 }
