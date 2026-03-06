@@ -2,13 +2,11 @@ package com.example.sortingalg;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
-import sortingAlgorithms.*;
 
-public class TestApplication extends Application {
+public class MainApplication extends Application {
     @Override
     public void start(Stage stage) {
         ComparisonMode comparisonMode = new ComparisonMode();
