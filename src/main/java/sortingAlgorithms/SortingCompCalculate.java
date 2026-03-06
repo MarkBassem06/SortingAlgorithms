@@ -1,8 +1,8 @@
 package sortingAlgorithms;
 
 public class SortingCompCalculate {
-    long comparisons;
-    long swaps;
+    int comparisons;
+    int swaps;
 
     void addComparisons() {
         comparisons++;
@@ -12,11 +12,11 @@ public class SortingCompCalculate {
         swaps++;
     }
 
-    public long getComparisons() {
+    public int getComparisons() {
         return comparisons;
     }
 
-    public long getSwaps() {
+    public int getSwaps() {
         return swaps;
     }
 

@@ -1,56 +1,71 @@
 package sortingAlgorithms;
 
-public class MergeSort implements SortingAlg{
-    SortingCompCalculate calculate = new SortingCompCalculate();
+public class MergeSort implements SortingAlg {
+    private SortingCompCalculate calculate = new SortingCompCalculate();
+    private SortingListener listener;
     @Override
     public SortingCompCalculate getCalculation() {
         return calculate;
     }
+
+    @Override
+    public void setListener(SortingListener listener) {
+        this.listener = listener;
+    }
+
     @Override
     public int[] sort(int[] arr) {
         calculate.reset();
-        return divide(arr);
+        mergeSort(arr, 0, arr.length - 1);
+        return arr;
     }
 
-    public int[] divide(int[] arr){
-        int n = arr.length;
-        if(n == 1){
-            return arr;
-        }
-        int[] arrLeft = new int[n/2];
-        int[] arrRight = new int[n-(n/2)];
+    private void mergeSort(int[] arr, int l, int r) {
+        if (l >= r)
+            return;
 
-        for(int i = 0; i<n/2;i++){
-            arrLeft[i] = arr[i];
-        }
-        for(int i = n/2; i<n;i++){
-            arrRight[i-(n/2)] = arr[i];
-        }
+        int mid = (l+r) /2;
 
-        return merge(divide(arrLeft),divide(arrRight));
+        mergeSort(arr, l, mid);
+        mergeSort(arr, mid+1, r);
+
+        merge(arr, l, mid, r);
     }
-    public int[] merge(int[] arrLeft, int[] arrRight){
-        int[] result = new int[arrLeft.length + arrRight.length];
-        int l = 0; int r = 0; int i = 0;
-        while(l < arrLeft.length && r < arrRight.length){
+
+    private void merge(int[] arr, int l, int mid, int r) {
+
+        int[] temp = new int[r-l+1];
+
+        int i = l;
+        int j = mid+1;
+        int k = 0;
+
+        while (i <= mid && j <= r) {
             calculate.addComparisons();
-            if(arrLeft[l] <= arrRight[r]){
-                result[i] = arrLeft[l];
-                l++; i++;
+            if (listener != null) {
+                listener.onCompare(arr, i, j);
             }
-            else{
-                result[i] = arrRight[r];
-                r++; i++;
+            if (arr[i] <= arr[j]) {
+                temp[k++] = arr[i++];
+            } else {
+                temp[k++] = arr[j++];
             }
         }
-        while(l < arrLeft.length){
-            result[i] = arrLeft[l];
-            l++; i++;
+
+        while (i <= mid) {
+            temp[k++] = arr[i++];
         }
-        while(r < arrRight.length){
-            result[i] = arrRight[r];
-            r++; i++;
+
+        while (j <= r) {
+            temp[k++] = arr[j++];
         }
-        return result;
+
+        //Back to original array
+        for (int z = 0; z < temp.length; z++) {
+            arr[l+z] = temp[z];
+            calculate.addSwaps();
+            if (listener != null)
+                listener.onSwap(arr, l+z, l+z); //overwite same element
+        }
     }
 }

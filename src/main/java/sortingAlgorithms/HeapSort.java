@@ -2,10 +2,17 @@ package sortingAlgorithms;
 
 public class HeapSort implements SortingAlg{
     SortingCompCalculate calculate = new SortingCompCalculate();
+    SortingListener listener;
     @Override
     public SortingCompCalculate getCalculation() {
         return calculate;
     }
+
+    @Override
+    public void setListener(SortingListener listener){
+        this.listener = listener;
+    }
+
     @Override
     public int[] sort(int[] arr) {
         calculate.reset();
@@ -17,6 +24,9 @@ public class HeapSort implements SortingAlg{
             arr[0] = temp;
             end--;
             calculate.addSwaps();
+            if (listener != null) {
+                listener.onSwap(arr, 0, end+1);
+            }
             max_heapify(arr,0, end);
         }
         return arr;
@@ -26,10 +36,16 @@ public class HeapSort implements SortingAlg{
         int r = idx*2 +2;
         int largest = idx;
         calculate.addComparisons();
+        if (listener != null) {
+            listener.onCompare(arr, l, largest);
+        }
         if(l <= end && arr[l] > arr[largest]){
             largest = l;
         }
         calculate.addComparisons();
+        if (listener != null) {
+            listener.onCompare(arr, r, largest);
+        }
         if(r <= end && arr[r] > arr[largest]){
             largest = r;
         }
@@ -38,6 +54,9 @@ public class HeapSort implements SortingAlg{
             arr[idx] = arr[largest];
             arr[largest] = temp;
             calculate.addSwaps();
+            if (listener != null) {
+                listener.onSwap(arr, idx, largest);
+            }
             max_heapify(arr, largest, end);
         }
     }

@@ -4,10 +4,17 @@ import java.util.Random;
 
 public class QuickSort implements SortingAlg{
     SortingCompCalculate calculate = new SortingCompCalculate();
+    SortingListener listener;
     @Override
     public SortingCompCalculate getCalculation() {
         return calculate;
     }
+
+    @Override
+    public void setListener(SortingListener listener){
+        this.listener = listener;
+    }
+
     @Override
     public int[] sort(int[] arr) {
         calculate.reset();
@@ -30,17 +37,26 @@ public class QuickSort implements SortingAlg{
         int j = st;
         for(int i = st+1; i <= end; i++){
             calculate.addComparisons();
+            if (listener != null) {
+                listener.onCompare(arr, i, j);
+            }
             if(arr[i] <= key){
                 j++;
                 int temp = arr[i];
                 arr[i] = arr[j];
                 arr[j] = temp;
                 calculate.addSwaps();
+                if (listener != null) {
+                    listener.onSwap(arr, i, j);
+                }
             }
         }
         arr[st] = arr[j];
         arr[j] = key;
         calculate.addSwaps();
+        if (listener != null) {
+            listener.onSwap(arr, st, j);
+        }
         return j;
     }
 }

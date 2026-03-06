@@ -1,8 +1,10 @@
 package com.example.sortingalg;
 
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import sortingAlgorithms.SortingAlg;
@@ -16,7 +18,7 @@ import java.util.List;
 
 public class ComparisonMode {
 
-    void show(Stage stage) {
+    Pane getLayout(){
         //Choosing Algorithms
         CheckBox selectionCB = new CheckBox("Selection Sort");
         CheckBox insertionCB = new CheckBox("Insertion Sort");
@@ -25,7 +27,7 @@ public class ComparisonMode {
         CheckBox heapCB = new CheckBox("Heap Sort");
         CheckBox quickCB = new CheckBox("Quick Sort");
 
-        HBox algorithmBox = new HBox(5,
+        HBox algorithmBox = new HBox(20 ,
                 selectionCB, insertionCB, bubbleCB,
                 mergeCB, heapCB, quickCB
         );
@@ -33,6 +35,7 @@ public class ComparisonMode {
         //Choose Input type (file/generated)
         RadioButton fileIn = new RadioButton("Load From File");
         RadioButton generatedIn = new RadioButton("Generated Array");
+        HBox typeIn = new HBox(20,generatedIn, fileIn);
 
         ToggleGroup inputGroup = new ToggleGroup();
         generatedIn.setToggleGroup(inputGroup);
@@ -51,9 +54,13 @@ public class ComparisonMode {
         generatedType.setDisable(false);
 
         //Select size and no of runs
+        Label sizeLabel = new Label("Array Size:");
         TextField sizeField = new TextField("1000");
+        Label runsLabel = new Label("No of Runs:");
         TextField runsField = new TextField("5");
         sizeField.setDisable(false);
+        HBox sizeBox = new HBox(5,sizeLabel, sizeField);
+        HBox runsBox = new HBox(5,runsLabel, runsField);
 
         fileIn.setOnAction(e -> {
             filePathField.setDisable(false);
@@ -67,8 +74,6 @@ public class ComparisonMode {
         });
 
 
-
-
         Button runBtn = new Button("Run Comparison");
 
         TextArea outputArea = new TextArea();
@@ -78,6 +83,11 @@ public class ComparisonMode {
         runBtn.setOnAction(e -> {
             int size = Integer.parseInt(sizeField.getText());
             int runs = Integer.parseInt(runsField.getText());
+
+            if (size > 10000) {
+                showAlert("Max size for comparison is 10000.");
+                return;
+            }
 
             //Algorithms selection for running
             List<String> selectedAlgorithms = new ArrayList<>();
@@ -89,7 +99,7 @@ public class ComparisonMode {
             if (quickCB.isSelected()) selectedAlgorithms.add("Quick Sort");
 
             if (selectedAlgorithms.isEmpty()) {
-                outputArea.setText("Please select at least one algorithm.");
+                showAlert("Select at least 1 Algorithm!");
                 return;
             }
 
@@ -115,42 +125,42 @@ public class ComparisonMode {
 
             //Algorithms loop
             for (String algName : selectedAlgorithms) {
-                long totalTime = 0;
-                long minTime = Long.MAX_VALUE;
-                long maxTime = Long.MIN_VALUE;
-                long totalComparisons = 0;
-                long totalSwaps = 0;
+                Double totalTime = 0.0;
+                Double minTime = Double.MAX_VALUE;
+                Double maxTime = Double.MIN_VALUE;
+                long noComparisons = 0;
+                long noSwaps = 0;
 
                 //Sorting array loop
                 for (int i = 0; i < runs; i++) {
                     int[] arrCopy = inputArr.clone();
                     SortingAlg algorithm = getAlgorithm(algName);
 
-                    long start = System.nanoTime()/10^6;
+                    double start = System.nanoTime()/1000000.0;
                     algorithm.sort(arrCopy);
-                    long end = System.nanoTime()/10^6;
-                    long time = end - start;
+                    double end = System.nanoTime()/1000000.0;
+                    double time = end - start;
 
                     totalTime += time;
                     minTime = Math.min(minTime, time);
                     maxTime = Math.max(maxTime, time);
 
                     SortingCompCalculate calc = algorithm.getCalculation();
-                    totalComparisons += calc.getComparisons();
-                    totalSwaps += calc.getSwaps();
+                    noComparisons = calc.getComparisons();
+                    noSwaps = calc.getSwaps();
                 }
-                long average = totalTime / runs;
+                Double average = totalTime / runs;
 
                 //Add results to CSV file
                 csvBuilder.append(algName).append(",")
-                        .append(fileIn.isSelected() ? "File" : generatedType.getValue()).append(",")
+                        .append(fileIn.isSelected() ? "File: " +filePathField.getText() : generatedType.getValue()).append(",")
                         .append(inputArr.length).append(",")
                         .append(runs).append(",")
                         .append(average).append(",")
                         .append(minTime).append(",")
                         .append(maxTime).append(",")
-                        .append(totalComparisons).append(",")
-                        .append(totalSwaps)
+                        .append(noComparisons).append(",")
+                        .append(noSwaps)
                         .append("\n");
             }
 
@@ -160,32 +170,38 @@ public class ComparisonMode {
                 boolean fileExists = file.exists();
                 FileWriter writer = new FileWriter(file, true);
                 if (!fileExists) {
-                    writer.write("Algorithm,ArrayType,Size,Runs,AverageTime,MinTime,MaxTime,Comparisons,Swaps\n");
+                    writer.write("Algorithm,ArrayType,Size,Runs,AverageTime(ms),MinTime(ms),MaxTime(ms),Comparisons,Swaps\n");
                 }
                 writer.append(csvBuilder.toString());
                 writer.close();
+                if (!fileExists) {
+                    outputArea.setText("CSV file created successfully.");
+                }
+                else{
+                    outputArea.setText("CSV file updated successfully.");
+                }
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-
-            outputArea.setText("CSV file generated successfully.");
         });
         VBox layout = new VBox(10,
                 algorithmBox,
-                generatedIn,
-                fileIn,
+                typeIn,
                 filePathField,
                 generatedType,
-                sizeField,
-                runsField,
+                sizeBox,
+                runsBox,
                 runBtn,
                 outputArea
         );
-
-        Scene scene = new Scene(layout, 600, 600);
-        stage.setScene(scene);
-        stage.setTitle("Comparison Mode");
-        stage.show();
+        layout.setStyle("-fx-padding: 20;");
+        return layout;
+    }
+    //Alert if size>10000 or if no algorithm is selected
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setContentText(message);
+        alert.show();
     }
 
     private SortingAlg getAlgorithm(String name) {

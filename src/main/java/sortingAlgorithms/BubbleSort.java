@@ -2,10 +2,17 @@ package sortingAlgorithms;
 
 public class BubbleSort implements SortingAlg{
     SortingCompCalculate calculate = new SortingCompCalculate();
+    SortingListener listener;
     @Override
     public SortingCompCalculate getCalculation() {
         return calculate;
     }
+
+    @Override
+    public void setListener(SortingListener listener){
+        this.listener = listener;
+    }
+
     @Override
     public int[] sort(int[] arr){
         calculate.reset();
@@ -13,11 +20,17 @@ public class BubbleSort implements SortingAlg{
         for(int i = 0; i < n; i++){
             for(int j = 0; j< n-i-1;j++){
                 calculate.addComparisons();
+                if (listener != null) {
+                    listener.onCompare(arr, j, j+1);
+                }
                 if(arr[j+1] < arr[j]){
                     int temp = arr[j+1];
                     arr[j+1] = arr[j];
                     arr[j] = temp;
                     calculate.addSwaps();
+                    if (listener != null) {
+                        listener.onSwap(arr, j, j+1);
+                    }
                 }
             }
         }

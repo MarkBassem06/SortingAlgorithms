@@ -2,9 +2,15 @@ package sortingAlgorithms;
 
 public class SelectionSort implements SortingAlg{
     SortingCompCalculate calculate = new SortingCompCalculate();
+    SortingListener listener;
     @Override
     public SortingCompCalculate getCalculation() {
         return calculate;
+    }
+
+    @Override
+    public void setListener(SortingListener listener){
+        this.listener = listener;
     }
     @Override
     public int[] sort(int[] arr){
@@ -14,6 +20,9 @@ public class SelectionSort implements SortingAlg{
             int idx = i;
             for(int j = i+1; j<n;j++){
                 calculate.addComparisons();
+                if (listener != null) {
+                    listener.onCompare(arr, j, idx);
+                }
                 if(arr[j] < arr[idx]){
                     idx = j;
                 }
@@ -23,6 +32,9 @@ public class SelectionSort implements SortingAlg{
                 arr[i] = arr[idx];
                 arr[idx] = temp;
                 calculate.addSwaps();
+                if (listener != null) {
+                    listener.onSwap(arr, i, idx);
+                }
             }
         }
         return arr;
