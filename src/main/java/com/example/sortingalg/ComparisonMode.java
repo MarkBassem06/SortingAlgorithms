@@ -1,12 +1,9 @@
 package com.example.sortingalg;
 
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import sortingAlgorithms.SortingAlg;
 import sortingAlgorithms.SortingCompCalculate;
 
@@ -128,8 +125,12 @@ public class ComparisonMode {
                 Double totalTime = 0.0;
                 Double minTime = Double.MAX_VALUE;
                 Double maxTime = Double.MIN_VALUE;
-                long noComparisons = 0;
-                long noSwaps = 0;
+                long totalComparisons = 0;
+                long totalSwaps = 0;
+                Long minComp = Long.MAX_VALUE;
+                Long maxComp = Long.MIN_VALUE;
+                Long minSwaps = Long.MAX_VALUE;
+                Long maxSwaps = Long.MIN_VALUE;
 
                 //Sorting array loop
                 for (int i = 0; i < runs; i++) {
@@ -146,31 +147,33 @@ public class ComparisonMode {
                     maxTime = Math.max(maxTime, time);
 
                     SortingCompCalculate calc = algorithm.getCalculation();
-                    noComparisons = calc.getComparisons();
-                    noSwaps = calc.getSwaps();
+                    totalComparisons += calc.getComparisons();
+                    totalSwaps += calc.getSwaps();
                 }
-                Double average = totalTime / runs;
+                Double averageTime = totalTime / runs;
+                Long averageComp = totalComparisons / runs;
+                Long averageSwaps = totalSwaps / runs;
 
                 //Add results to CSV file
                 csvBuilder.append(algName).append(",")
                         .append(fileIn.isSelected() ? "File: " +filePathField.getText() : generatedType.getValue()).append(",")
                         .append(inputArr.length).append(",")
                         .append(runs).append(",")
-                        .append(average).append(",")
+                        .append(averageTime).append(",")
                         .append(minTime).append(",")
                         .append(maxTime).append(",")
-                        .append(noComparisons).append(",")
-                        .append(noSwaps)
+                        .append(averageComp).append(",")
+                        .append(averageSwaps)
                         .append("\n");
             }
 
             //Save CSV file
             try {
-                File file = new File("sorting_results.csv");
+                File file = new File("sorting_results3.csv");
                 boolean fileExists = file.exists();
                 FileWriter writer = new FileWriter(file, true);
                 if (!fileExists) {
-                    writer.write("Algorithm,ArrayType,Size,Runs,AverageTime(ms),MinTime(ms),MaxTime(ms),Comparisons,Swaps\n");
+                    writer.write("Algorithm,ArrayType,Size,Runs,AverageTime(ms),MinTime(ms),MaxTime(ms),AverageComparisons,AverageSwaps\n");
                 }
                 writer.append(csvBuilder.toString());
                 writer.close();
